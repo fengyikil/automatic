@@ -1,0 +1,22 @@
+{
+"terminal.integrated.profiles.windows": {
+
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell",
+            "args": ["-NoExit", "-Command", "& { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 }"] 
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+
+            ],
+            "args": ["-NoExit", "-Command", "& { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 }"] ,
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        }
+    }
+}
