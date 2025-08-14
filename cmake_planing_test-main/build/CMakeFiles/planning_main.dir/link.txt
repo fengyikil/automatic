@@ -1,0 +1,3 @@
+D:\tree\env\cmake\bin\cmake.exe -E rm -f CMakeFiles\planning_main.dir/objects.a
+D:\tree\env\mingw64\bin\ar.exe qc CMakeFiles\planning_main.dir/objects.a @CMakeFiles\planning_main.dir\objects1.rsp
+D:\tree\env\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\planning_main.dir/objects.a -Wl,--no-whole-archive -o D:\tree\test\cmake_planing_test-main\bin\planning_main.exe -Wl,--out-implib,libplanning_main.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\planning_main.dir\linkLibs.rsp
