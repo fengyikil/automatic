@@ -11,7 +11,8 @@ plt.rcParams['axes.unicode_minus'] = False
 # ---------- 1. 理论系统 ----------
 wn = 50
 z = 0.2
-G = TransferFunction([wn**2], [1, 2*z*wn, wn**2])
+# G = TransferFunction([wn**2], [1, 2*z*wn, wn**2])
+G = TransferFunction([10], [1])
 
 # ---------- 2. 生成扫频数据 ----------
 fs = 1000          # 采样率

@@ -8,25 +8,15 @@ from scipy.signal import TransferFunction, lsim, chirp, decimate
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-# ---------- 1. 理论系统 ----------
-wn = 50
-z = 0.2
-G = TransferFunction([wn**2], [1, 2*z*wn, wn**2])
-# G = TransferFunction([10], [1])
-
-# ---------- 2. 生成扫频数据 ----------
 fs = 1000           # 原始采样率
 T = 20
-t = np.arange(0, T, 1/fs)
+f_min, f_max = 10, 50
+csv_file = 'sweep_io.csv'
 
-u = 0.5 * chirp(t, f0=0.5, f1=50, t1=T, method='logarithmic')
-_, y, _ = lsim(G, U=u, T=t)
-
-# 添加一点点噪声（信噪比约40 dB，可按需调整）
-noise_power = 1e-3
-u += np.random.normal(0, np.sqrt(noise_power), u.shape)
-y += np.random.normal(0, np.sqrt(noise_power), y.shape)
-
+# ---------- 3. 读 CSV ----------
+df = pd.read_csv(csv_file)
+t, u, y = df['t'].values, df['u'].values, df['y'].values
+fs = 1/(t[1] - t[0])
 
 # ---------- 9. 画时域波形（单窗口） ----------
 plt.figure(figsize=(7, 3.5))
@@ -40,15 +30,6 @@ plt.grid(True, ls=':')
 plt.tight_layout()
 plt.show()
 
-# 保存 CSV（若已存在可注释）
-pd.DataFrame({'t': t, 'u': u, 'y': y}).to_csv('sweep_io.csv',
-                                              index=False, float_format='%.6f')
-
-# ---------- 3. 读 CSV ----------
-df = pd.read_csv('sweep_io.csv')
-t, u, y = df['t'].values, df['u'].values, df['y'].values
-fs = 1/(t[1] - t[0])
-
 # ---------- 4. 降采样 ----------
 dec_factor = 10                 # 10 倍降采样
 u_ds = decimate(u,  dec_factor, ftype='fir')
@@ -57,7 +38,6 @@ fs_ds = fs // dec_factor        # 新采样率 100 Hz
 
 # ---------- 5. CWT ----------
 wavelet = 'cmor1.5-1.0'         # 复 Morlet
-f_min, f_max = 0.5, 50
 # 每倍频程 8 点 => 总点数 ≈ 46
 freqs = np.logspace(np.log10(f_min), np.log10(f_max),
                     int(np.log2(f_max/f_min)*8))
@@ -83,21 +63,21 @@ mag_cwt = 20*np.log10(np.abs(H_cwt) + 1e-12)
 phase_cwt = np.unwrap(np.angle(H_cwt)) * 180/np.pi
 
 # ---------- 7. 理论伯德图 ----------
-w_th, mag_th, phase_th = G.bode(w=2*np.pi*freqs)
-f_th = w_th / (2*np.pi)
+# w_th, mag_th, phase_th = G.bode(w=2*np.pi*freqs)
+# f_th = w_th / (2*np.pi)
 
 # ---------- 8. 画图 ----------
 plt.figure(figsize=(6, 5))
 plt.subplot(2, 1, 1)
 plt.semilogx(freqs, mag_cwt, label='CWT')
-plt.semilogx(f_th, mag_th, '--', label='理论')
+# plt.semilogx(f_th, mag_th, '--', label='理论')
 plt.ylabel('幅值 [dB]')
 plt.legend()
 plt.grid(which='both', ls=':')
 
 plt.subplot(2, 1, 2)
 plt.semilogx(freqs, phase_cwt, label='CWT')
-plt.semilogx(f_th, phase_th, '--', label='理论')
+# plt.semilogx(f_th, phase_th, '--', label='理论')
 plt.ylabel('相位 [°]')
 plt.xlabel('频率 [Hz]')
 plt.legend()

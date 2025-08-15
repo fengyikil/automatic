@@ -9,28 +9,8 @@ from numpy import unwrap
 plt.rcParams['font.sans-serif'] = ['SimHei']      # 黑体
 plt.rcParams['axes.unicode_minus'] = False        # 解决负号乱码
 
-# ---------- 2. 理论系统 ----------
-wn = 50
-z = 0.2
-# G = TransferFunction([wn**2], [1, 2*z*wn, wn**2])
-# G = TransferFunction([wn**2], [1, 2*z*wn, wn**2])
-# G = TransferFunction([10], [1, 20, 2])
-G = TransferFunction([10], [1])
-
-# ---------- 3. 生成扫频数据 ----------
-fs = 1000          # 采样率
-T = 20            # 总时长
-t = np.arange(0, T, 1/fs)
-
-u = 0.5 * chirp(t, f0=0.5, f1=50, t1=T, method='logarithmic')
-_, y, _ = lsim(G, U=u, T=t)
-
-# 保存 CSV（如已存在可跳过）
-pd.DataFrame({'t': t, 'u': u, 'y': y}).to_csv('sweep_io.csv',
-                                              index=False, float_format='%.6f')
-
 # ---------- 4. 读 CSV ----------
-df = pd.read_csv('sweep_io.csv')
+df = pd.read_csv('real.csv')
 t, u, y = df['t'].values, df['u'].values, df['y'].values
 fs = 1/(t[1]-t[0])
 T = t[-1]
@@ -59,22 +39,22 @@ mag = 20*np.log10(np.abs(H)+1e-12)
 phase = unwrap(np.angle(H)) * 180/np.pi   # 去掉尖角
 
 # ---------- 6. 理论伯德图 ----------
-w_th, mag_th, phase_th = G.bode(
-    w=np.logspace(np.log10(2*np.pi*0.5), np.log10(2*np.pi*50), 400))
-f_th = w_th / (2*np.pi)
+# w_th, mag_th, phase_th = G.bode(
+#     w=np.logspace(np.log10(2*np.pi*0.5), np.log10(2*np.pi*50), 400))
+# f_th = w_th / (2*np.pi)
 
 # ---------- 7. 画图 ----------
 plt.figure(figsize=(6, 5))
 plt.subplot(2, 1, 1)
 plt.semilogx(f, mag, label='反推')
-plt.semilogx(f_th, mag_th, '--', label='理论')
+# plt.semilogx(f_th, mag_th, '--', label='理论')
 plt.ylabel('幅值 [dB]')
 plt.legend()
 plt.grid(which='both', ls=':')
 
 plt.subplot(2, 1, 2)
 plt.semilogx(f, phase, label='反推')
-plt.semilogx(f_th, phase_th, '--', label='理论')
+# plt.semilogx(f_th, phase_th, '--', label='理论')
 plt.ylabel('相位 [°]')
 plt.xlabel('频率 [Hz]')
 plt.legend()
