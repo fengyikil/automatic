@@ -17,6 +17,7 @@ csv_file = 'sweep_io.csv'
 df = pd.read_csv(csv_file)
 t, u, y = df['t'].values, df['u'].values, df['y'].values
 fs = 1/(t[1] - t[0])
+plt.ion()          # 关键：打开交互模式
 
 # ---------- 9. 画时域波形（单窗口） ----------
 plt.figure(figsize=(7, 3.5))
@@ -83,4 +84,5 @@ plt.xlabel('频率 [Hz]')
 plt.legend()
 plt.grid(which='both', ls=':')
 plt.tight_layout()
+plt.ioff()   # 关闭交互模式
 plt.show()
